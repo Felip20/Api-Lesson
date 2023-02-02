@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Helper\ResponseHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class Authcontroller extends Controller
@@ -29,5 +30,21 @@ class Authcontroller extends Controller
         return ResponseHelper::win([
             'access_token'=>$token
         ]);
+    }
+    public function login(Request $request){
+
+        $request->validate([
+            'email'=>'required',
+            'password'=>'required'
+        ]);
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $user = auth()->user();
+
+            $token = $user->createToken('Blog')->accessToken;
+
+            return ResponseHelper::win([
+            'access_token'=>$token
+         ]);
+        }
     }
 }
