@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use App\Helper\ResponseHelper;
 use App\Http\Controllers\Api\Authcontroller;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,7 @@ Route::post('login',[Authcontroller::class,'login']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('profile',[ProfileController::class,'profile']);
+    Route::post('logout',[Authcontroller::class,'logout']);
+
+    Route::get('category',[CategoryController::class,'index']);
 });
