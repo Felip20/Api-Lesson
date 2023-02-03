@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Post;
 use App\Models\Media;
 use App\Helper\ResponseHelper;
+use App\Http\Resources\PostResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +13,24 @@ use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = Post::orderByDesc('created_at');
+        
+       if ($request->category_id) {
+            $query->where('category_id',$request->category_id);
+       }
+       if ($request->search) {
+            $query->where(function($query)use($request){
+                $query->where('name','like','%'.$request->search.'%')
+                        ->orWhere('description','like','%'.$request->search.'%');
+            });
+       }
+
+        $posts= $query->paginate(10);
+
+        return PostResource::collection($posts)->additional(['message'=>'success']);
+    }
     public function create(Request $request)
     {
         $request->validate([
