@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Media;
 use App\Helper\ResponseHelper;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\PostDetailResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -52,6 +53,7 @@ class PostController extends Controller
         
 
         $post = new Post();
+        $post->user_id = auth()->user()->id;
         $post->name = $request->name;
         $post->description = $request->description;
         $post->category_id = $request->category_id;
@@ -70,5 +72,11 @@ class PostController extends Controller
             DB::rollback();
             return ResponseHelper::lose($e->getMessage());
         }
+    }
+
+    public function show($id)
+    {
+        $post = Post::where('id', $id)->firstOrFail();
+        return ResponseHelper::win(new PostDetailResource($post));
     }
 }
